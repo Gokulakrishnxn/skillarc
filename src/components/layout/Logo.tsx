@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 interface LogoProps {
@@ -11,12 +12,13 @@ interface LogoProps {
  */
 export function Logo({ className, size = 22 }: LogoProps) {
   return (
-    <img
+    <Image
       src="/icons/skillarc-logo.png"
       alt="SkillArc logo"
       width={size}
       height={size}
       className={cn("rounded-sm object-contain", className)}
+      unoptimized
     />
   );
 }
