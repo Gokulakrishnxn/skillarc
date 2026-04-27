@@ -54,7 +54,7 @@ export function Navbar({ skillIndex, githubStars = 12_400 }: NavbarProps) {
           </span>
         </Link>
 
-        <nav className="hidden flex-1 items-center gap-1 md:flex">
+        <nav className="hidden flex-1 items-center gap-1 lg:flex">
           {PRIMARY_NAV.map((item) => {
             const isActive =
               pathname === item.href ||
@@ -83,7 +83,7 @@ export function Navbar({ skillIndex, githubStars = 12_400 }: NavbarProps) {
         <div className="flex flex-1 items-center justify-end gap-2 md:flex-none">
           <SearchBar skills={skillIndex} compact />
           <a
-            href="https://github.com/skillarc-dev/skillarc"
+            href="https://github.com/Gokulakrishnxn/skillarc"
             target="_blank"
             rel="noreferrer"
             className="hidden h-9 items-center gap-2 rounded-md border border-border-strong bg-card px-3 text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-foreground sm:inline-flex"
@@ -96,10 +96,10 @@ export function Navbar({ skillIndex, githubStars = 12_400 }: NavbarProps) {
           </a>
           <Link
             href="/docs/installation"
-            className="inline-flex h-9 items-center gap-1.5 rounded-md border border-accent/50 bg-transparent px-3 text-xs font-medium text-foreground transition-colors hover:border-accent hover:bg-accent/10"
+            className="inline-flex h-9 items-center gap-1.5 rounded-md border border-accent/50 bg-transparent px-2.5 text-xs font-medium text-foreground transition-colors hover:border-accent hover:bg-accent/10 sm:px-3"
           >
             <Plus className="h-3.5 w-3.5 text-accent" aria-hidden />
-            New Skill
+            <span className="hidden sm:inline">New Skill</span>
           </Link>
         </div>
       </div>

@@ -4,7 +4,7 @@ import { CategoryIndex } from "@/components/skill/CategoryIndex";
 export const metadata: Metadata = {
   title: "Tools",
   description:
-    "JSON-Schema tool definitions for function-calling agents. Search, code execution, SQL, files — and more.",
+    "Related tools for AI agents: JSON schemas, integrations, and function-calling interfaces.",
 };
 
 export default function ToolsIndexPage() {
@@ -12,7 +12,7 @@ export default function ToolsIndexPage() {
     <CategoryIndex
       category="tools"
       title="Tools"
-      description="JSON-Schema tool definitions for function-calling agents. Each tool is backend-agnostic — wire it to whichever provider (Tavily, E2B, Postgres, Bing) you already use."
+      description="Related tools for AI agents and copilots. Browse backend-agnostic function definitions for search, file operations, SQL, and code execution, then connect them to your own providers."
     />
   );
 }

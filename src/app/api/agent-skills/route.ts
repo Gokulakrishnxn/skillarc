@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { loadAgentSkills } from "@/lib/agent-skills";
 
+export const dynamic = "force-static";
+
 /**
  * Runtime introspection endpoint for AgentSkills loading.
  * Useful while authoring skills to verify override/filter behavior.

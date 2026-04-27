@@ -226,30 +226,6 @@ export function SkillGrid({ skills, copyValues }: SkillGridProps): ReactNode {
         })}
       </div>
 
-      {/* Tag pills */}
-      {allTags.length > 0 && (
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="text-xs uppercase tracking-wider text-muted-foreground">
-            Tags
-          </span>
-          {allTags.map((tag) => (
-            <TagPill
-              key={tag}
-              tag={tag}
-              active={state.tags.includes(tag)}
-              onClick={() => {
-                dispatch({ type: "toggle-tag", value: tag });
-                updateUrl({
-                  tags: state.tags.includes(tag)
-                    ? state.tags.filter((t) => t !== tag)
-                    : [...state.tags, tag],
-                });
-              }}
-            />
-          ))}
-        </div>
-      )}
-
       {/* Result count */}
       <div className="flex items-center justify-between text-xs text-muted-foreground">
         <p>

@@ -8,7 +8,7 @@ import { CodeBlock } from "@/components/ui/CodeBlock";
 export const metadata: Metadata = {
   title: "Introduction",
   description:
-    "Skillarc is the open registry of prompt templates, tool definitions, and agent workflows. Browse, copy, ship.",
+    "SkillArc is an open library for docs, AI skills, AI agents, tools, prompts, and UI components.",
 };
 
 const TOC = [
@@ -31,7 +31,7 @@ export default function IntroductionPage() {
     <DocPage
       eyebrow="Docs · Getting Started"
       title="Introduction"
-      description="Skillarc is an open registry of prompt templates, tool definitions, and agent workflows for the agentic era. Browse the library, copy the code you need, and ship faster."
+      description="SkillArc is an open library for Docs, AI Skills, AI Agents, Tools, Prompts, and UI Components. Browse, copy, customize, and ship faster."
       toc={TOC}
       next={{ title: "Installation", href: "/docs/installation" }}
     >
@@ -43,16 +43,14 @@ export default function IntroductionPage() {
 
       <h2>What is Skillarc?</h2>
       <p>
-        Skillarc is to AI agents what shadcn/ui is to React components — a
-        copy-paste-friendly catalog of artifacts that solve concrete problems.
-        Every skill is a self-contained MDX file with YAML frontmatter, a prose
-        explanation, and at least one runnable example.
+        SkillArc is to AI agents what shadcn/ui is to React components: a
+        copy-paste-friendly library of practical building blocks. Every entry is
+        designed to be understandable, customizable, and production-ready.
       </p>
       <p>
-        The library is organized into four skill types, every entry is
-        compatible with at least one frontier model, and the ergonomics are
-        built around &quot;view the source, copy the source, paste the
-        source.&quot;
+        The platform is organized around Docs, AI Skills, AI Agents, Tools,
+        Prompts, and UI Components so teams can quickly assemble and adapt
+        agentic experiences without starting from scratch.
       </p>
 
       <h2>Skill types</h2>

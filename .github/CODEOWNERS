@@ -1,0 +1,8 @@
+# Protect core site shell and main pages.
+/src/app/page.tsx @Gokulakrishnxn
+/src/app/layout.tsx @Gokulakrishnxn
+/src/app/globals.css @Gokulakrishnxn
+/src/app/docs/layout.tsx @Gokulakrishnxn
+/src/components/layout/** @Gokulakrishnxn
+/src/lib/nav.ts @Gokulakrishnxn
+/README.md @Gokulakrishnxn

@@ -5,10 +5,11 @@ import type { NavSection } from "./types";
  */
 export const PRIMARY_NAV: { label: string; href: string }[] = [
   { label: "Docs", href: "/docs/introduction" },
-  { label: "Skills", href: "/skills" },
-  { label: "Workflows", href: "/workflows" },
+  { label: "AI Skills", href: "/skills" },
+  { label: "AI Agents", href: "/workflows" },
   { label: "Tools", href: "/tools" },
-  { label: "Registry", href: "/skills" },
+  { label: "Prompts", href: "/prompts" },
+  { label: "UI Components", href: "/ui-components" },
   { label: "Changelog", href: "/docs/changelog" },
 ];
 
