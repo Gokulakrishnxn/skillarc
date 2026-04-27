@@ -1,0 +1,80 @@
+---
+title: "SQL Query Tool"
+description: "Read-only SQL execution tool with parameterized queries, query timeout, and row caps."
+type: "tool"
+llms: ["GPT-4o", "Claude 3.5", "Gemini 1.5"]
+tags: ["data", "sql", "tool"]
+author: "community"
+copies: 1502
+stars: 188
+published: true
+---
+
+## Overview
+
+Lets the agent run safe `SELECT` queries against a database. Bind variables are first-class so you don't have to coach the model into avoiding string concatenation.
+
+<Callout variant="warning" title="Read-only role required">
+Connect this tool with a database role that only has `SELECT` privileges on the explicitly allowlisted schemas. The LLM should never own DDL or DML.
+</Callout>
+
+## Usage
+
+```json:tool.json
+{
+  "name": "sql_query",
+  "description": "Run a read-only SQL query and return up to 1,000 rows as JSON. Use bind variables ($1, $2) instead of string concatenation. Available schemas are listed in the system prompt.",
+  "parameters": {
+    "type": "object",
+    "required": ["sql"],
+    "properties": {
+      "sql": {
+        "type": "string",
+        "description": "Parameterized SELECT statement. Must NOT contain INSERT, UPDATE, DELETE, DROP, ALTER, or CREATE."
+      },
+      "params": {
+        "type": "array",
+        "description": "Bind values for $1, $2, ... in order.",
+        "items": { "type": ["string", "number", "boolean", "null"] }
+      },
+      "limit": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 1000,
+        "default": 100
+      }
+    }
+  }
+}
+```
+
+## Parameters
+
+| Field | Type | Notes |
+| --- | --- | --- |
+| `sql` | string | Validate against an allowlist of statement types before executing. |
+| `params` | array | Binds keep injection out of the picture. |
+| `limit` | int | Caller still applies an outer `LIMIT` regardless. |
+
+## Examples
+
+```typescript:executor.ts
+import { Pool } from "pg";
+
+const pool = new Pool({ connectionString: process.env.READONLY_DATABASE_URL });
+
+const FORBIDDEN = /\b(insert|update|delete|drop|alter|create|truncate|grant|revoke)\b/i;
+
+export async function execSql(args: { sql: string; params?: unknown[]; limit?: number }) {
+  if (FORBIDDEN.test(args.sql)) {
+    throw new Error("Refused: statement type not allowed for the agent role.");
+  }
+  const sql = `SELECT * FROM (${args.sql}) AS t LIMIT ${args.limit ?? 100}`;
+  const result = await pool.query(sql, args.params ?? []);
+  return result.rows;
+}
+```
+
+## Compatible LLMs
+
+All major frontier models honor the bind-variable convention when it's spelled out in the description. Small models drift back to string concatenation — sandbox accordingly.

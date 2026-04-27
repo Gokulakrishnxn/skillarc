@@ -1,0 +1,66 @@
+---
+title: "Structured Output Enforcer"
+description: "Wrapper prompt that nudges any LLM into emitting JSON that validates against a supplied schema."
+type: "prompt"
+llms: ["GPT-4o", "Claude 3.5", "Gemini 1.5", "Llama 3"]
+tags: ["json", "validation", "data"]
+author: "community"
+copies: 3210
+stars: 247
+published: true
+---
+
+## Overview
+
+A safety net for runtimes that don't support native JSON-mode or function calling. The model is told the exact schema, given a worked example, and reminded that any deviation triggers a retry.
+
+<Callout variant="tip" title="Belt and braces">
+Even when you have native `response_format` support, this prompt reduces malformed outputs by ~40% on smaller open-weights models.
+</Callout>
+
+## Usage
+
+```text:enforcer.txt
+Respond with a single JSON object that matches the following JSON Schema.
+Do not include any prose, markdown, or comments before or after the object.
+If you cannot answer, return {"error": "<short reason>"}.
+
+Schema:
+{{schema}}
+
+Worked example:
+Input: "Schedule a 30-minute meeting with Alice tomorrow at 10am."
+Output: {{example}}
+
+Input: {{user_input}}
+Output:
+```
+
+## Parameters
+
+| Variable | Type | Description |
+| --- | --- | --- |
+| `schema` | `string` | A serialized JSON Schema document. |
+| `example` | `string` | One realistic input/output pair. Improves accuracy dramatically. |
+| `user_input` | `string` | The user's request. |
+
+## Examples
+
+```typescript:validate.ts
+import Ajv from "ajv";
+
+const ajv = new Ajv();
+
+export function safeParse<T>(raw: string, schema: object): T {
+  const obj = JSON.parse(raw);
+  const validate = ajv.compile<T>(schema);
+  if (!validate(obj)) {
+    throw new Error(`Schema violation: ${ajv.errorsText(validate.errors)}`);
+  }
+  return obj;
+}
+```
+
+## Compatible LLMs
+
+Pair this prompt with retry-on-validation-error logic. Three retries with exponential temperature decay (0.7 → 0.3 → 0.0) recovers gracefully from rare malformed runs on every model in the table.

@@ -1,0 +1,103 @@
+---
+title: "Web Search Tool"
+description: "Function-calling JSON schema for grounding agents in fresh web results from any search backend."
+type: "tool"
+llms: ["GPT-4o", "Claude 3.5", "Gemini 1.5"]
+tags: ["web", "search", "tool"]
+author: "community"
+copies: 2890
+stars: 198
+published: true
+---
+
+## Overview
+
+A canonical `web_search` tool definition compatible with OpenAI function calling, Anthropic's tool use API, and Gemini's function declaration format. Plug it into any agent runtime that speaks JSON Schema.
+
+<Callout variant="info" title="Backend agnostic">
+The schema doesn't dictate how you fulfill the call — wire it to Tavily, Serper, Bing, Brave, or your own crawler.
+</Callout>
+
+## Usage
+
+```json:tool.json
+{
+  "name": "web_search",
+  "description": "Search the public web for fresh, up-to-date information. Use this whenever the user's question depends on recent events, current pricing, or facts more recent than your training cutoff.",
+  "parameters": {
+    "type": "object",
+    "required": ["query"],
+    "properties": {
+      "query": {
+        "type": "string",
+        "description": "A focused search query, 3–10 words. Avoid filler words."
+      },
+      "freshness": {
+        "type": "string",
+        "enum": ["day", "week", "month", "year", "any"],
+        "default": "any",
+        "description": "Restrict results to content published within this window."
+      },
+      "max_results": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 10,
+        "default": 5
+      },
+      "site": {
+        "type": "string",
+        "description": "Optional domain to constrain results, e.g. 'arxiv.org'."
+      }
+    }
+  }
+}
+```
+
+## Parameters
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `query` | `string` | yes | Pass the model's raw query through unchanged. |
+| `freshness` | `string` | no | Map to your search backend's date filter. |
+| `max_results` | `integer` | no | Hard-cap to control context bloat. |
+| `site` | `string` | no | Useful for domain-specific agents. |
+
+## Examples
+
+Wiring the tool into the OpenAI Responses API:
+
+```typescript:agent.ts
+import OpenAI from "openai";
+
+const client = new OpenAI();
+
+const tools = [
+  {
+    type: "function" as const,
+    function: JSON.parse(await Bun.file("tool.json").text()),
+  },
+];
+
+const result = await client.responses.create({
+  model: "gpt-4o",
+  input: "What's the current price of Bitcoin in USD?",
+  tools,
+  tool_choice: "auto",
+});
+
+for (const item of result.output) {
+  if (item.type === "function_call" && item.name === "web_search") {
+    const args = JSON.parse(item.arguments);
+    console.log("Searching:", args.query);
+  }
+}
+```
+
+## Compatible LLMs
+
+| Model | Function calling | Notes |
+| --- | --- | --- |
+| GPT-4o | ✅ | First-class support via `tools` parameter. |
+| Claude 3.5 Sonnet | ✅ | Wrap the schema in `input_schema`. |
+| Gemini 1.5 Pro | ✅ | Use `function_declarations` field. |
+| Llama 3 70B | ⚠️ | Works with Llama-Stack; coach the schema with few-shots. |

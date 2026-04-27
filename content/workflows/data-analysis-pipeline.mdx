@@ -1,0 +1,95 @@
+---
+title: "Data Analysis Pipeline"
+description: "Multi-step agent that profiles a CSV, proposes visualizations, executes pandas code, and writes the narrative."
+type: "workflow"
+llms: ["GPT-4o", "Claude 3.5"]
+tags: ["data", "code", "analysis"]
+author: "community"
+copies: 1124
+stars: 198
+published: true
+---
+
+## Overview
+
+Turns "here's a CSV, tell me what's interesting" into a deterministic pipeline: schema profiling → analysis plan → safe code execution in a sandbox → narrative write-up with embedded charts.
+
+<Callout variant="warning" title="Sandbox the runtime">
+The `code_interpreter` step writes and executes code. Run it in a Firecracker, Daytona, or E2B sandbox — never in your application process.
+</Callout>
+
+## Usage
+
+```yaml:data-pipeline.yaml
+name: data-analysis-pipeline
+version: 0.4.0
+
+inputs:
+  csv_path: { type: string }
+  question: { type: string }
+
+stages:
+  - id: profile
+    tool: code_interpreter
+    code: |
+      import pandas as pd
+      df = pd.read_csv("{{csv_path}}")
+      profile = {
+        "rows": len(df),
+        "columns": [
+          {"name": c, "dtype": str(df[c].dtype), "nulls": int(df[c].isna().sum())}
+          for c in df.columns
+        ],
+        "head": df.head(5).to_dict(orient="records"),
+      }
+      print(json.dumps(profile))
+    output: profile
+
+  - id: plan
+    model: gpt-4o
+    prompt: |
+      The user asked: {{question}}
+      Dataset profile: {{profile}}
+      Propose 3–5 analyses (each: title, why, pandas snippet) as JSON.
+
+  - id: execute
+    fan_out: plan.analyses
+    tool: code_interpreter
+    code: "{{item.snippet}}"
+    output: results
+
+  - id: narrate
+    model: claude-3-5-sonnet
+    prompt: |
+      Write a brief Markdown report (≤ 600 words). For each analysis include
+      one paragraph and embed the chart at "![](./{{result.chart}})". Be
+      surgical — call out anomalies, don't restate the schema.
+```
+
+## Parameters
+
+| Stage | Tool | Notes |
+| --- | --- | --- |
+| profile | `code_interpreter` | Pure pandas, no LLM. |
+| plan | LLM | Asks the model to brainstorm analyses. |
+| execute | `code_interpreter` | One sandboxed run per analysis. |
+| narrate | LLM | Final Markdown synthesis. |
+
+## Examples
+
+```python:run.py
+from skillarc import run
+
+result = run(
+    "data-pipeline.yaml",
+    csv_path="./sales_q4.csv",
+    question="Why did revenue dip in November?",
+)
+
+with open("report.md", "w") as f:
+    f.write(result["narrate"])
+```
+
+## Compatible LLMs
+
+The pipeline is deliberately model-light: only the plan and narrate stages need an LLM. Both stages tolerate Claude or GPT-4o interchangeably.

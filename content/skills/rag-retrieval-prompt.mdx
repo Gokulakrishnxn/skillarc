@@ -1,0 +1,81 @@
+---
+title: "RAG Retrieval Prompt"
+description: "System prompt for retrieval-augmented generation with strict citation enforcement and graceful failure modes."
+type: "prompt"
+llms: ["GPT-4o", "Claude 3.5", "Gemini 1.5", "Llama 3"]
+tags: ["rag", "memory", "data"]
+author: "community"
+copies: 4127
+stars: 312
+published: true
+---
+
+## Overview
+
+A battle-tested system prompt for retrieval-augmented generation (RAG). It instructs the model to ground every claim in retrieved context, refuse fabrication, and emit numeric citations the caller can resolve back to source documents.
+
+<Callout variant="tip" title="When to reach for it">
+Use this prompt anytime your application stitches search results, vector hits, or document chunks into the context window before generation.
+</Callout>
+
+## Usage
+
+Drop the block below straight into your system message. Replace `{{retrieved_chunks}}` with newline-delimited passages you've pulled from your retriever.
+
+```text:system-prompt.txt
+You are a meticulous research assistant. You answer the user's question using
+ONLY the passages provided in <context>. Follow these rules at all times:
+
+1. Cite every factual claim with a numeric marker that maps to a passage,
+   e.g. "Transformers use self-attention [1]."
+2. If <context> does not contain enough information, reply exactly:
+   "I don't have enough information to answer that."
+3. Never invent sources. Never invent quotes. Never invent dates.
+4. Prefer concise answers. Quote the source verbatim only when precision matters.
+5. When passages disagree, surface the disagreement and cite both.
+
+<context>
+{{retrieved_chunks}}
+</context>
+
+User question: {{question}}
+```
+
+## Parameters
+
+| Variable | Type | Description |
+| --- | --- | --- |
+| `retrieved_chunks` | `string` | Newline-separated passages, each prefixed with `[n]`. |
+| `question` | `string` | The end-user's question, untouched. |
+| `max_tokens` | `number` | Recommended: 800. Long enough for citations, short enough to stay grounded. |
+
+## Examples
+
+A minimal Python adapter that wires the prompt into the OpenAI Chat Completions API:
+
+```python:rag_call.py
+from openai import OpenAI
+
+client = OpenAI()
+
+SYSTEM = open("system-prompt.txt").read()
+
+def answer(question: str, chunks: list[str]) -> str:
+    formatted = "\n".join(f"[{i + 1}] {c}" for i, c in enumerate(chunks))
+    response = client.chat.completions.create(
+        model="gpt-4o",
+        temperature=0.1,
+        messages=[
+            {"role": "system", "content": SYSTEM},
+            {
+                "role": "user",
+                "content": f"<context>\n{formatted}\n</context>\n\n{question}",
+            },
+        ],
+    )
+    return response.choices[0].message.content
+```
+
+## Compatible LLMs
+
+Works on every major instruction-tuned model. Citation discipline is strongest on `GPT-4o` and `Claude 3.5 Sonnet`; smaller models (Llama 3 8B, Mistral 7B) benefit from temperature ≤ 0.2 and a low `max_tokens` to discourage speculation.

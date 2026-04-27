@@ -1,0 +1,100 @@
+---
+title: "Customer Support Agent"
+description: "Triage workflow that classifies tickets, drafts responses, and escalates politely when it can't resolve."
+type: "workflow"
+llms: ["GPT-4o", "Claude 3.5"]
+tags: ["support", "classification", "rag"]
+author: "community"
+copies: 962
+stars: 173
+published: true
+---
+
+## Overview
+
+A production-grade ticket triage workflow. Classifies the inbound message, retrieves relevant knowledge-base articles, drafts a reply, and decides whether to send autonomously or escalate to a human agent.
+
+<Callout variant="tip" title="Hand-off discipline">
+The escalation stage emits a structured handoff payload your agent dashboard can render — never just a "transferring you now" string.
+</Callout>
+
+## Usage
+
+```yaml:support-agent.yaml
+name: customer-support-agent
+version: 1.2.0
+
+inputs:
+  message: { type: string }
+  customer_id: { type: string }
+
+stages:
+  - id: classify
+    model: gpt-4o-mini
+    response_format: { type: json_schema, schema: classification_schema }
+    prompt: |
+      Classify this ticket. Categories: billing, technical, account, refund,
+      other. Confidence 0–1. If confidence < 0.7 set "escalate": true.
+
+  - id: fetch_kb
+    when: "{{classify.escalate}} == false"
+    tool: kb_search
+    parameters:
+      category: "{{classify.category}}"
+      query: "{{message}}"
+
+  - id: draft
+    when: "{{classify.escalate}} == false"
+    model: claude-3-5-sonnet
+    prompt: |
+      You are a friendly customer-success rep. Draft a reply grounded in the
+      retrieved KB articles. Sign off as "The {{brand}} team".
+
+  - id: handoff
+    when: "{{classify.escalate}} == true"
+    output:
+      type: handoff
+      reason: "{{classify.category}} (confidence {{classify.confidence}})"
+      summary: "{{classify.summary}}"
+```
+
+## Parameters
+
+| Stage | Trigger | Output |
+| --- | --- | --- |
+| classify | always | `{ category, confidence, summary, escalate }` |
+| fetch_kb | low-risk tickets | retrieved KB chunks |
+| draft | low-risk tickets | reply text |
+| handoff | uncertain tickets | structured human-handoff payload |
+
+## Examples
+
+A barebones Express route that runs the workflow:
+
+```typescript:server.ts
+import express from "express";
+import { run } from "@skillarc/runtime";
+import workflow from "./support-agent.yaml";
+
+const app = express();
+app.use(express.json());
+
+app.post("/tickets", async (req, res) => {
+  const result = await run(workflow, {
+    message: req.body.message,
+    customer_id: req.body.customerId,
+    brand: "Acme",
+  });
+
+  if (result.handoff) {
+    return res.status(202).json({ status: "escalated", payload: result.handoff });
+  }
+  return res.json({ status: "auto-replied", reply: result.draft });
+});
+
+app.listen(3000);
+```
+
+## Compatible LLMs
+
+`gpt-4o-mini` is plenty for the classify stage (cheap, fast, accurate). Use a frontier model for the draft step where tone and grounding matter.

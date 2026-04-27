@@ -1,0 +1,61 @@
+---
+title: "Chain-of-Thought Reasoner"
+description: "Structured chain-of-thought prompt that separates private reasoning from the final answer to keep responses tidy."
+type: "prompt"
+llms: ["GPT-4o", "Claude 3.5", "Gemini 1.5", "Llama 3"]
+tags: ["reasoning", "code"]
+author: "community"
+copies: 1980
+stars: 154
+published: true
+---
+
+## Overview
+
+Coaxes the model into multi-step reasoning while hiding the scratchpad behind XML tags. The end-user sees a clean, structured response; your application sees the full trace for evaluation and observability.
+
+<Callout variant="tip" title="Evaluation-friendly">
+Because reasoning lives between explicit `<thinking>` tags, you can stream it to a logger, trim it with a regex, or feed it to a judge model.
+</Callout>
+
+## Usage
+
+```text:reasoner.txt
+You are a careful problem solver. For every user question, do the following:
+
+1. Inside <thinking>...</thinking> tags, lay out your reasoning step by step.
+   Enumerate assumptions, alternative hypotheses, and any calculations.
+2. After </thinking>, write the final answer in <answer>...</answer>.
+3. The <answer> block must be self-contained — never reference the
+   <thinking> block or its contents.
+4. If the question is ambiguous, ask one clarifying question inside
+   <answer> instead of guessing.
+
+Question: {{question}}
+```
+
+## Parameters
+
+| Variable | Type | Description |
+| --- | --- | --- |
+| `question` | `string` | The user's prompt verbatim. |
+| `temperature` | `number` | Recommended 0.2 for math, 0.7 for open-ended reasoning. |
+
+## Examples
+
+Strip the scratchpad before showing the response to your end-user:
+
+```typescript:strip.ts
+const RX = /<thinking>[\s\S]*?<\/thinking>/g;
+const ANS = /<answer>([\s\S]*?)<\/answer>/;
+
+export function publicAnswer(raw: string): string {
+  const match = ANS.exec(raw);
+  if (match) return match[1].trim();
+  return raw.replace(RX, "").trim();
+}
+```
+
+## Compatible LLMs
+
+Native chain-of-thought reasoners (`o1`, `o3`, `Claude 3.7` extended thinking) make this prompt redundant — use it on instruction-tuned models that don't expose a built-in scratchpad.

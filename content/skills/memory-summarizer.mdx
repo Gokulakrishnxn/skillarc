@@ -1,0 +1,75 @@
+---
+title: "Memory Summarizer"
+description: "Rolling-window summarizer that compresses long conversations into structured durable memory."
+type: "memory"
+llms: ["GPT-4o", "Claude 3.5", "Mistral"]
+tags: ["memory", "summary"]
+author: "community"
+copies: 1450
+stars: 121
+published: true
+---
+
+## Overview
+
+Summarizes the oldest part of a conversation when the context window starts to fill. The output is YAML so downstream agents can index it, diff it, and feed it back as durable memory.
+
+<Callout variant="info" title="Pairs nicely with">
+Use alongside the **RAG Retrieval Prompt** for agents that need both episodic memory (recent turns) and semantic memory (vector store).
+</Callout>
+
+## Usage
+
+```text:summarizer.txt
+You compress conversation transcripts into structured memory.
+
+Input: a transcript between USER and ASSISTANT.
+Output: a YAML document with these top-level keys:
+
+  goals:        bulleted list of what the user wants overall
+  decisions:    bulleted list of choices that have been made
+  open_threads: bulleted list of unresolved questions
+  facts:        key-value pairs of stable facts about the user
+  next_steps:   ordered list of what should happen next
+
+Rules:
+- Never invent facts. Only summarize what was actually said.
+- Drop pleasantries, retries, and filler.
+- Every entry must be a single sentence.
+- Output ONLY the YAML — no prose, no markdown fences.
+
+Transcript:
+{{transcript}}
+```
+
+## Parameters
+
+| Variable | Type | Description |
+| --- | --- | --- |
+| `transcript` | `string` | Concatenated turns separated by `USER:` / `ASSISTANT:`. |
+
+## Examples
+
+Expected output shape:
+
+```yaml:memory.yaml
+goals:
+  - Build a customer-support agent for a SaaS billing portal
+decisions:
+  - Use Postgres + pgvector for retrieval
+  - Ship a Slack integration in v1
+open_threads:
+  - Whether to support self-service refunds
+facts:
+  account_size: enterprise
+  preferred_model: claude-3-5-sonnet
+  timezone: America/Los_Angeles
+next_steps:
+  - 1. Draft the system prompt for tier-1 triage
+  - 2. Wire pgvector and seed FAQ corpus
+  - 3. Run an offline eval against last quarter's tickets
+```
+
+## Compatible LLMs
+
+YAML output is most reliable on `GPT-4o` and `Claude 3.5`. Smaller models (Mistral 7B, Llama 3 8B) work but benefit from a JSON Schema constrained-decoding wrapper.

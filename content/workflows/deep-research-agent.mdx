@@ -1,0 +1,116 @@
+---
+title: "Deep Research Agent"
+description: "Plan-then-execute workflow that conducts multi-step research, cites every source, and emits a Markdown report."
+type: "workflow"
+llms: ["GPT-4o", "Claude 3.5", "Gemini 1.5"]
+tags: ["rag", "web", "research"]
+author: "community"
+copies: 1840
+stars: 287
+published: true
+---
+
+## Overview
+
+A multi-stage agent loop modeled on OpenAI's Deep Research and Anthropic's research workflow. The agent decomposes the user's question into sub-queries, runs them through `web_search`, dedupes evidence, and synthesizes a report with footnoted citations.
+
+<Callout variant="info" title="Stages">
+**Plan → Search → Read → Critique → Write.** Each stage is a separate LLM call so you can swap in a cheaper model where reasoning isn't required.
+</Callout>
+
+## Usage
+
+```yaml:deep-research.yaml
+name: deep-research-agent
+version: 1.0.0
+runtime: any
+description: >
+  Conducts multi-step research with explicit planning, evidence gathering,
+  and citation-grounded synthesis.
+
+inputs:
+  question:
+    type: string
+    description: The research question from the user.
+  depth:
+    type: string
+    enum: [shallow, standard, deep]
+    default: standard
+
+outputs:
+  report:
+    type: string
+    description: Markdown report with inline footnote citations.
+  sources:
+    type: array
+    items: { type: string, format: url }
+
+stages:
+  - id: plan
+    model: gpt-4o
+    prompt: |
+      Decompose the question into 3–7 sub-questions that, when answered,
+      collectively answer the parent question. Output JSON: {"queries": [...]}.
+    output: queries
+
+  - id: search
+    fan_out: queries
+    tool: web_search
+    parameters:
+      max_results: 5
+      freshness: month
+    output: hits
+
+  - id: read
+    fan_out: hits
+    tool: fetch_page
+    output: passages
+
+  - id: critique
+    model: claude-3-5-sonnet
+    prompt: |
+      Review the gathered passages. Discard any that are off-topic, paywalled,
+      or contradicted by ≥2 other sources. Return a deduped list of evidence.
+    output: evidence
+
+  - id: write
+    model: gpt-4o
+    prompt: |
+      Write a report answering the user's question using ONLY <evidence>.
+      Use numbered footnote citations [^1], [^2]. Add a "## Sources" section
+      at the end mapping each footnote to its URL.
+    output: report
+```
+
+## Parameters
+
+| Stage | Model | Tool | Notes |
+| --- | --- | --- | --- |
+| plan | GPT-4o | — | Reasoning step. |
+| search | — | `web_search` | One call per sub-query, fanned out. |
+| read | — | `fetch_page` | Pulls full passages for the chosen hits. |
+| critique | Claude 3.5 | — | Cross-checks contradictions. |
+| write | GPT-4o | — | Markdown synthesis with footnotes. |
+
+## Examples
+
+Reference TypeScript runner that walks the YAML graph stage-by-stage:
+
+```typescript:run.ts
+import { runStage } from "@skillarc/runtime";
+import workflow from "./deep-research.yaml";
+
+const ctx = { question: "What are the latest advances in MoE architectures?" };
+
+for (const stage of workflow.stages) {
+  const out = await runStage(stage, ctx);
+  ctx[stage.output] = out;
+  console.log(`✓ ${stage.id}`);
+}
+
+console.log(ctx.report);
+```
+
+## Compatible LLMs
+
+The plan/critique/write stages benefit from frontier models (`GPT-4o`, `Claude 3.5 Sonnet`, `Gemini 1.5 Pro`). The fan-out search stage is just a tool call and works on any model with function calling.

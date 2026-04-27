@@ -1,0 +1,89 @@
+---
+title: "Code Interpreter"
+description: "Sandboxed Python execution tool — runs untrusted agent code with bounded memory, time, and network."
+type: "tool"
+llms: ["GPT-4o", "Claude 3.5", "Gemini 1.5"]
+tags: ["code", "sandbox", "python"]
+author: "community"
+copies: 2640
+stars: 412
+published: true
+---
+
+## Overview
+
+A vendor-agnostic schema for a code-execution tool. Pair with a sandbox runtime (E2B, Daytona, Firecracker, gVisor) so the agent can compute on data without owning your production environment.
+
+<Callout variant="danger" title="Never execute in-process">
+Running model-authored Python inside your API server is how you get a crypto miner installed. Always run it in an ephemeral container.
+</Callout>
+
+## Usage
+
+```json:tool.json
+{
+  "name": "code_interpreter",
+  "description": "Execute Python code in a sandboxed environment with pandas, numpy, matplotlib, scipy preinstalled. Use this for math, data analysis, simulations, and chart generation. Returns stdout, stderr, and any files written to /workspace.",
+  "parameters": {
+    "type": "object",
+    "required": ["code"],
+    "properties": {
+      "code": {
+        "type": "string",
+        "description": "Python source to execute. Code runs to completion or until the timeout."
+      },
+      "timeout_seconds": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 120,
+        "default": 30
+      },
+      "files": {
+        "type": "array",
+        "description": "Files to make available at /workspace before execution.",
+        "items": {
+          "type": "object",
+          "required": ["path", "content"],
+          "properties": {
+            "path": { "type": "string" },
+            "content": { "type": "string" }
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+## Parameters
+
+| Field | Type | Default | Notes |
+| --- | --- | --- | --- |
+| `code` | string | — | Required. Pure Python 3.11. |
+| `timeout_seconds` | int | 30 | Hard kill on overrun. |
+| `files` | array | `[]` | Mounted under `/workspace`. |
+
+## Examples
+
+A minimal E2B-backed implementation:
+
+```python:executor.py
+from e2b import Sandbox
+
+def run(code: str, timeout: int = 30) -> dict:
+    with Sandbox(template="python") as sandbox:
+        proc = sandbox.process.start_and_wait(
+            f'python -c """{code}"""',
+            timeout=timeout,
+        )
+        return {
+            "stdout": proc.stdout,
+            "stderr": proc.stderr,
+            "exit_code": proc.exit_code,
+            "files": sandbox.filesystem.list("/workspace"),
+        }
+```
+
+## Compatible LLMs
+
+Frontier models (`GPT-4o`, `Claude 3.5`, `Gemini 1.5`) all reliably call code interpreters and parse stdout. Smaller open-weights models can use it with the **Structured Output Enforcer** wrapper.
