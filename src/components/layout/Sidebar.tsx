@@ -5,6 +5,7 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { SIDEBAR_NAV } from "@/lib/nav";
 import { cn } from "@/lib/utils";
 import type { NavItem } from "@/lib/types";
+import { GithubMark } from "./GithubMark";
 
 const BADGE_TONE: Record<NonNullable<NavItem["badge"]>["tone"], string> = {
   blue: "bg-info",
@@ -45,9 +46,17 @@ export function Sidebar({ className }: SidebarProps) {
         className,
       )}
     >
-      <nav aria-label="Documentation navigation" className="space-y-6">
+      <nav
+        aria-label="Documentation navigation"
+        className="flex min-h-full flex-col gap-6"
+      >
         {SIDEBAR_NAV.map((section) => (
-          <div key={section.title}>
+          <div
+            key={section.title}
+            className={cn(
+              section.title.toLowerCase() === "community" && "mt-auto",
+            )}
+          >
             <p className="mb-2 px-2 text-[11px] font-semibold uppercase tracking-wider text-foreground/80">
               {section.title}
             </p>
@@ -75,6 +84,9 @@ export function Sidebar({ className }: SidebarProps) {
                         )}
                       />
                       <span className="truncate">{item.title}</span>
+                      {item.title === "Contribute on GitHub" && (
+                        <GithubMark className="ml-2 h-3.5 w-3.5 shrink-0 text-muted-foreground group-hover:text-foreground" />
+                      )}
                       {item.badge && (
                         <span
                           aria-hidden

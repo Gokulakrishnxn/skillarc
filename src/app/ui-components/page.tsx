@@ -4,7 +4,7 @@ import { ArrowRight, LayoutTemplate, Search, Sidebar as SidebarIcon } from "luci
 import { CodeBlock } from "@/components/ui/CodeBlock";
 
 export const metadata: Metadata = {
-  title: "UI Components",
+  title: "UI compoents",
   description:
     "SkillArc UI components for docs shells, navigation, search, and content presentation.",
 };
@@ -37,10 +37,10 @@ export default function UiComponentsPage() {
     <main className="mx-auto w-full max-w-6xl px-6 py-12 md:px-8">
       <header className="mb-10 space-y-3">
         <p className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
-          SkillArc Library · ui components
+          SkillArc Library · ui compoents
         </p>
         <h1 className="text-3xl font-bold tracking-tight text-foreground md:text-4xl">
-          SkillArc UI Components
+          UI compoents
         </h1>
         <p className="max-w-3xl text-base text-muted-foreground">
           Reusable UI components used across SkillArc docs and listings. Compose
@@ -84,10 +84,10 @@ export default function UiComponentsPage() {
           content modules.
         </p>
         <Link
-          href="/docs/introduction"
+          href="/docs/installation"
           className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-foreground hover:text-accent-soft"
         >
-          Open docs introduction
+          Open docs installation
           <ArrowRight className="h-4 w-4" aria-hidden />
         </Link>
       </section>

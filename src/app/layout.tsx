@@ -1,20 +1,22 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { JetBrains_Mono, Poppins } from "next/font/google";
 import { Toaster } from "sonner";
 import { Suspense } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { getSkillIndex } from "@/lib/skill-index";
 import "./globals.css";
 
-const geistSans = Geist({
+const appSans = Poppins({
   variable: "--font-geist-sans",
-  subsets: ["latin"],
+  subsets: ["latin-ext", "latin"],
+  weight: ["400", "500", "600", "700"],
   display: "swap",
 });
 
-const geistMono = Geist_Mono({
+const appMono = JetBrains_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  weight: ["400", "500", "600"],
   display: "swap",
 });
 
@@ -43,6 +45,11 @@ export const metadata: Metadata = {
     type: "website",
     url: "/",
   },
+  icons: {
+    icon: [{ url: "/icons/skillarc-logo.png", type: "image/png", sizes: "512x512" }],
+    apple: [{ url: "/icons/skillarc-logo.png", sizes: "512x512" }],
+    shortcut: ["/icons/skillarc-logo.png"],
+  },
 };
 
 export const viewport: Viewport = {
@@ -58,7 +65,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${appSans.variable} ${appMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <body className="min-h-full bg-background text-foreground font-sans">

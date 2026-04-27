@@ -4,13 +4,13 @@ import type { NavSection } from "./types";
  * Top-of-page primary navigation. Mirrors the link set called out in the spec.
  */
 export const PRIMARY_NAV: { label: string; href: string }[] = [
-  { label: "Docs", href: "/docs/introduction" },
-  { label: "AI Skills", href: "/skills" },
-  { label: "AI Agents", href: "/workflows" },
-  { label: "Tools", href: "/tools" },
-  { label: "Prompts", href: "/prompts" },
-  { label: "UI Components", href: "/ui-components" },
+  { label: "Docs", href: "/docs/installation" },
+  { label: "Compoents", href: "/docs/installation" },
+  { label: "Blocks", href: "/blocks" },
+  { label: "library", href: "/prompts" },
+  { label: "Resources", href: "/tools" },
   { label: "Changelog", href: "/docs/changelog" },
+  { label: "Community", href: "/community" },
 ];
 
 /**
@@ -20,41 +20,38 @@ export const PRIMARY_NAV: { label: string; href: string }[] = [
  */
 export const SIDEBAR_NAV: NavSection[] = [
   {
-    title: "Getting Started",
+    title: "Sections",
     items: [
       { title: "Introduction", href: "/docs/introduction" },
       { title: "Installation", href: "/docs/installation" },
       { title: "Quickstart", href: "/docs/quickstart" },
-      { title: "Agent Skills", href: "/docs/agent-skills" },
       { title: "CLI", href: "/docs/cli" },
     ],
   },
   {
-    title: "Skill Types",
+    title: "Library",
     items: [
+      { title: "Prompt Templates", href: "/prompts" },
       {
-        title: "Prompt Templates",
-        href: "/skills?type=prompt",
-        badge: { label: "", tone: "blue" },
-      },
-      { title: "Tool Definitions", href: "/skills?type=tool" },
-      {
-        title: "Agent Workflows",
-        href: "/skills?type=workflow",
+        title: "AI Agents",
+        href: "/workflows",
         badge: { label: "", tone: "green" },
       },
-      { title: "Memory Skills", href: "/skills?type=memory" },
+      {
+        title: "Skills",
+        href: "/skills",
+        badge: { label: "", tone: "blue" },
+      },
     ],
   },
   {
-    title: "Filter by LLM",
+    title: "community",
     items: [
-      { title: "All Models", href: "/skills" },
-      { title: "GPT-4o", href: "/skills?llm=GPT-4o" },
-      { title: "Claude 3.5", href: "/skills?llm=Claude" },
-      { title: "Gemini 1.5", href: "/skills?llm=Gemini" },
-      { title: "Llama 3", href: "/skills?llm=Llama%203" },
-      { title: "Mistral", href: "/skills?llm=Mistral" },
+      { title: "community", href: "/community" },
+      {
+        title: "contribute on github",
+        href: "https://github.com/Gokulakrishnxn/skillarc",
+      },
     ],
   },
 ];

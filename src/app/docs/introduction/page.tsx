@@ -13,8 +13,9 @@ export const metadata: Metadata = {
 
 const TOC = [
   { id: "what-is-skillarc", text: "What is Skillarc?", depth: 2 as const },
-  { id: "skill-types", text: "Skill types", depth: 2 as const },
-  { id: "philosophy", text: "Philosophy", depth: 2 as const },
+  { id: "who-is-this-for", text: "Who is this for?", depth: 2 as const },
+  { id: "how-to-get-started", text: "How to get started", depth: 2 as const },
+  { id: "what-you-can-browse", text: "What you can browse", depth: 2 as const },
   { id: "next-steps", text: "Next steps", depth: 2 as const },
 ];
 
@@ -31,7 +32,7 @@ export default function IntroductionPage() {
     <DocPage
       eyebrow="Docs · Getting Started"
       title="Introduction"
-      description="SkillArc is an open library for Docs, AI Skills, AI Agents, Tools, Prompts, and UI Components. Browse, copy, customize, and ship faster."
+      description="SkillArc is an open library for Docs, AI Skills, AI Agents, Tools, and Prompts. Browse, copy, customize, and ship faster."
       toc={TOC}
       next={{ title: "Installation", href: "/docs/installation" }}
     >
@@ -43,17 +44,51 @@ export default function IntroductionPage() {
 
       <h2>What is Skillarc?</h2>
       <p>
-        SkillArc is to AI agents what shadcn/ui is to React components: a
-        copy-paste-friendly library of practical building blocks. Every entry is
-        designed to be understandable, customizable, and production-ready.
+        SkillArc is an open library of ready-to-use building blocks for AI apps.
+        Instead of starting from a blank page, you can pick proven prompts, tools,
+        and agent workflows, then adapt them to your product.
       </p>
       <p>
-        The platform is organized around Docs, AI Skills, AI Agents, Tools,
-        Prompts, and UI Components so teams can quickly assemble and adapt
-        agentic experiences without starting from scratch.
+        Every item is designed to be practical: readable source, clear metadata,
+        and examples you can copy and run quickly.
       </p>
 
-      <h2>Skill types</h2>
+      <h2>Who is this for?</h2>
+      <ul>
+        <li>
+          <strong>Developers</strong> building copilots, assistants, or
+          automation workflows.
+        </li>
+        <li>
+          <strong>Teams</strong> that want reusable standards for prompts, tools,
+          and agent behaviors.
+        </li>
+        <li>
+          <strong>Learners</strong> who want concrete examples to understand how
+          modern AI systems are structured.
+        </li>
+      </ul>
+
+      <h2>How to get started</h2>
+      <ol>
+        <li>
+          Open the <strong>Skills</strong> or <strong>Prompts</strong> page and
+          pick one item related to your use case.
+        </li>
+        <li>
+          Copy the example and run it locally with your preferred model/provider.
+        </li>
+        <li>
+          Add one <strong>Tool</strong> definition (for files, SQL, or code
+          execution) to make your agent useful in real tasks.
+        </li>
+        <li>
+          Move to <strong>AI Agents</strong> and combine multiple blocks into a
+          full workflow.
+        </li>
+      </ol>
+
+      <h2>What you can browse</h2>
       <div className="not-prose my-6 grid grid-cols-1 gap-3 md:grid-cols-3">
         <Link
           href="/skills?type=prompt"
@@ -111,30 +146,11 @@ export default function IntroductionPage() {
         </Link>
       </div>
 
-      <h2>Philosophy</h2>
-      <ul>
-        <li>
-          <strong>Open by default.</strong> Every skill is MIT-licensed and
-          attributed back to its author.
-        </li>
-        <li>
-          <strong>Copy, don&apos;t install.</strong> The fastest path to
-          production is owning the code in your repo.
-        </li>
-        <li>
-          <strong>Model-agnostic.</strong> Skills declare LLM compatibility
-          metadata so you can filter the registry to what works.
-        </li>
-        <li>
-          <strong>Composable.</strong> Workflows reference skills and tools by
-          name; nothing is locked behind a runtime.
-        </li>
-      </ul>
-
       <h2>Next steps</h2>
       <p>
-        The fastest way to get a feel for the library is to install the SDK and
-        load a skill.
+        Start with one simple flow: choose a prompt, connect one tool, and test
+        an end-to-end output. Once that works, scale to multi-step agents with
+        the AI Agents section.
       </p>
 
       <CodeBlock code={SAMPLE} language="ts" filename="example.ts" />

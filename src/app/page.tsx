@@ -5,15 +5,16 @@ import {
   Cpu,
   Sparkles,
   TerminalSquare,
-  WandSparkles,
 } from "lucide-react";
+import { Logo } from "@/components/layout/Logo";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 const FEATURE_CARDS = [
   {
     title: "Docs",
     description:
       "Clear documentation for setup, architecture, and contribution flow across the SkillArc ecosystem.",
-    href: "/docs/introduction",
+    href: "/docs/installation",
     icon: TerminalSquare,
   },
   {
@@ -44,13 +45,6 @@ const FEATURE_CARDS = [
     href: "/prompts",
     icon: Sparkles,
   },
-  {
-    title: "SkillArc UI Components",
-    description:
-      "Consistent, dark-themed UI building blocks used across docs, listings, and detail pages.",
-    href: "/ui-components",
-    icon: TerminalSquare,
-  },
 ];
 
 export default function HomePage() {
@@ -64,23 +58,24 @@ export default function HomePage() {
         aria-hidden
         className="pointer-events-none absolute left-1/2 top-20 h-60 w-[42rem] -translate-x-1/2 rounded-full bg-accent/15 blur-[90px]"
       />
-      <div className="relative mx-auto max-w-7xl px-4 pb-20 pt-20 sm:px-6 md:px-8 md:pb-24 md:pt-28">
+      <div className="relative mx-auto max-w-7xl px-4 pb-0 pt-20 sm:px-6 md:px-8 md:pb-0 md:pt-28">
         <section className="mx-auto flex max-w-4xl flex-col items-center text-center">
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-border-strong bg-card/90 px-3 py-1 text-xs text-muted-foreground">
-            <WandSparkles className="h-3.5 w-3.5 text-accent" aria-hidden />
-            Introducing SkillArc Library
+          <span className="inline-flex items-center gap-2 rounded-full border border-border-strong bg-card/90 px-3.5 py-1.5 text-sm text-muted-foreground">
+            Introducing
+            <Logo size={14} className="rounded-[2px]" />
+            SkillArc Library
           </span>
           <h1 className="mt-7 text-3xl font-semibold tracking-tight text-foreground sm:text-5xl md:text-6xl">
             The Foundation for Your AI Agent Stack
           </h1>
           <p className="mt-5 max-w-2xl text-base text-muted-foreground sm:text-lg">
             SkillArc is a library that provides Docs, AI Skills, AI Agents, Tools,
-            Prompts, and SkillArc UI Components. Start with proven building blocks,
+            and Prompts. Start with proven building blocks,
             then customize and ship fast.
           </p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
             <Link
-              href="/docs/introduction"
+              href="/docs/installation"
               className="inline-flex h-10 items-center gap-2 rounded-md bg-foreground px-4 text-sm font-medium text-background transition hover:opacity-90"
             >
               Start Building
@@ -95,30 +90,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="mx-auto mt-10 max-w-5xl rounded-xl border border-border bg-card/70 p-3 shadow-[0_0_0_1px_rgba(255,255,255,0.02)]">
-          <div className="grid gap-3 md:grid-cols-3">
-            <div className="rounded-lg border border-border bg-background/70 p-4">
-              <p className="text-xs uppercase tracking-wide text-muted-foreground">
-                Published skills
-              </p>
-              <p className="mt-2 text-2xl font-semibold text-foreground">120+</p>
-            </div>
-            <div className="rounded-lg border border-border bg-background/70 p-4">
-              <p className="text-xs uppercase tracking-wide text-muted-foreground">
-                Supported models
-              </p>
-              <p className="mt-2 text-2xl font-semibold text-foreground">15+</p>
-            </div>
-            <div className="rounded-lg border border-border bg-background/70 p-4">
-              <p className="text-xs uppercase tracking-wide text-muted-foreground">
-                Community contributors
-              </p>
-              <p className="mt-2 text-2xl font-semibold text-foreground">80+</p>
-            </div>
-          </div>
-        </section>
-
-        <section className="mx-auto mt-6 grid max-w-6xl gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <section className="mx-auto mt-10 grid max-w-6xl gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {FEATURE_CARDS.map(({ title, description, href, icon: Icon }) => (
             <Link
               key={title}
@@ -158,6 +130,113 @@ export default function HomePage() {
             <ArrowRight className="h-4 w-4" aria-hidden />
           </Link>
         </section>
+
+        <footer className="mx-auto mt-20 max-w-6xl border-t border-border pt-10">
+          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+            <div>
+              <p className="text-sm font-semibold text-foreground">SkillArc</p>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Open library for AI builders: docs, skills, agents, prompts, tools,
+                and workflows.
+              </p>
+            </div>
+
+            <div>
+              <p className="text-sm font-semibold text-foreground">Library</p>
+              <ul className="mt-2 space-y-2 text-sm text-muted-foreground">
+                <li>
+                  <Link href="/docs/installation" className="hover:text-foreground">
+                    Docs
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/skills" className="hover:text-foreground">
+                    AI Skills
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/workflows" className="hover:text-foreground">
+                    AI Agents
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/prompts" className="hover:text-foreground">
+                    Prompts
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <p className="text-sm font-semibold text-foreground">Resources</p>
+              <ul className="mt-2 space-y-2 text-sm text-muted-foreground">
+                <li>
+                  <Link href="/tools" className="hover:text-foreground">
+                    Tools
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/icons" className="hover:text-foreground">
+                    Icons
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/docs/changelog" className="hover:text-foreground">
+                    Changelog
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <p className="text-sm font-semibold text-foreground">Community</p>
+              <ul className="mt-2 space-y-2 text-sm text-muted-foreground">
+                <li>
+                  <Link href="/community" className="hover:text-foreground">
+                    Discussions
+                  </Link>
+                </li>
+                <li>
+                  <a
+                    href="https://github.com/Gokulakrishnxn/skillarc"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="hover:text-foreground"
+                  >
+                    Contribute on GitHub
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="mt-10 flex flex-col gap-2 border-t border-border py-5 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+            <p>© {new Date().getFullYear()} SkillArc. All rights reserved.</p>
+            <div className="flex flex-wrap items-center gap-3">
+              <ThemeToggle />
+              <p>
+                developer by{" "}
+                <a
+                  href="https://www.gokulakrishnan.dev"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-foreground hover:text-accent-soft"
+                >
+                  Gokulakrishnan 🧸
+                </a>
+              </p>
+            </div>
+          </div>
+
+          <div className="relative mt-1 h-[54px] overflow-hidden border-t border-border pt-1 sm:h-[68px]">
+            <p
+              className="pointer-events-none select-none text-center font-mono text-[clamp(4rem,16vw,11rem)] font-semibold uppercase leading-none tracking-[-0.05em] text-transparent opacity-45"
+              style={{ WebkitTextStroke: "1px rgba(212,212,216,0.55)" }}
+            >
+              SkillArc
+            </p>
+          </div>
+        </footer>
       </div>
     </main>
   );

@@ -130,17 +130,18 @@ export function SearchBar({ skills, compact = false, className }: SearchBarProps
         aria-label="Search skills"
         className={cn(
           compact
-            ? "inline-flex h-9 w-9 items-center justify-center rounded-md border border-border-strong bg-card text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-            : "inline-flex h-9 w-full max-w-sm items-center gap-2 rounded-md border border-border-strong bg-card px-3 text-sm text-muted-foreground transition-colors hover:border-border-strong hover:bg-muted",
+            ? "inline-flex h-9 w-9 items-center justify-center rounded-md border border-border-strong bg-card text-muted-foreground transition hover:border-accent/50 hover:bg-muted hover:text-foreground"
+            : "inline-flex h-10 w-full max-w-sm items-center gap-2 rounded-lg border border-border-strong bg-card/90 px-3 text-sm text-muted-foreground shadow-[0_1px_0_rgba(255,255,255,0.03)] transition hover:border-accent/45 hover:bg-card",
           className,
         )}
       >
         <Search className="h-4 w-4" aria-hidden />
         {!compact && (
           <>
-            <span className="flex-1 text-left">Search skills...</span>
-            <kbd className="hidden items-center gap-1 rounded border border-border-strong bg-background px-1.5 py-0.5 font-mono text-[10px] tracking-wide text-muted-foreground sm:inline-flex">
-              <span className="text-xs">⌘</span>K
+            <span className="flex-1 text-left">Search docs, skills, tools...</span>
+            <kbd className="hidden items-center gap-1 rounded-md border border-border-strong bg-background px-1.5 py-0.5 font-mono text-[10px] tracking-wide text-muted-foreground sm:inline-flex">
+              <span className="text-xs">⌘</span>
+              <span>K</span>
             </kbd>
           </>
         )}
@@ -158,8 +159,8 @@ export function SearchBar({ skills, compact = false, className }: SearchBarProps
             onClick={close}
             aria-hidden
           />
-          <div className="relative z-10 w-full max-w-xl overflow-hidden rounded-xl border border-border-strong bg-popover shadow-2xl skf-fade-in">
-            <div className="flex items-center gap-3 border-b border-border px-4 py-3">
+          <div className="relative z-10 w-full max-w-xl overflow-hidden rounded-2xl border border-border-strong bg-popover shadow-[0_20px_80px_rgba(0,0,0,0.6)] skf-fade-in">
+            <div className="flex items-center gap-3 border-b border-border px-4 py-3.5">
               <Search className="h-4 w-4 text-muted-foreground" aria-hidden />
               <input
                 ref={inputRef}
@@ -170,6 +171,9 @@ export function SearchBar({ skills, compact = false, className }: SearchBarProps
                 className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
                 aria-label="Search query"
               />
+              <kbd className="hidden items-center gap-1 rounded-md border border-border-strong bg-background px-1.5 py-0.5 font-mono text-[10px] tracking-wide text-muted-foreground sm:inline-flex">
+                esc
+              </kbd>
               <button
                 type="button"
                 onClick={close}
@@ -179,7 +183,7 @@ export function SearchBar({ skills, compact = false, className }: SearchBarProps
                 <X className="h-4 w-4" />
               </button>
             </div>
-            <div className="max-h-[60vh] overflow-y-auto p-2">
+            <div className="max-h-[60vh] overflow-y-auto p-2.5">
               {results.length === 0 ? (
                 <div className="px-4 py-10 text-center text-sm text-muted-foreground">
                   No skills match{" "}
@@ -198,7 +202,7 @@ export function SearchBar({ skills, compact = false, className }: SearchBarProps
                           onClick={close}
                           onMouseEnter={() => setActive(index)}
                           className={cn(
-                            "flex items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-colors",
+                            "group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors",
                             isActive
                               ? "bg-muted text-foreground"
                               : "text-muted-foreground hover:bg-muted/60",
@@ -225,7 +229,7 @@ export function SearchBar({ skills, compact = false, className }: SearchBarProps
                 </ul>
               )}
             </div>
-            <div className="flex items-center justify-between border-t border-border bg-muted/40 px-4 py-2 text-[11px] text-muted-foreground">
+            <div className="flex items-center justify-between border-t border-border bg-muted/30 px-4 py-2.5 text-[11px] text-muted-foreground">
               <span>
                 <kbd className="font-mono">↑↓</kbd> navigate ·{" "}
                 <kbd className="font-mono">↵</kbd> open ·{" "}
