@@ -10,7 +10,6 @@ import {
 } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { SkillCard } from "./SkillCard";
-import { TagPill } from "./SkillBadge";
 import { cn } from "@/lib/utils";
 import type { SkillType } from "@/lib/types";
 import type { SkillIndexEntry } from "@/lib/skill-index";
@@ -113,12 +112,6 @@ export function SkillGrid({ skills, copyValues }: SkillGridProps): ReactNode {
       }),
     [skills],
   );
-
-  const allTags = useMemo(() => {
-    const set = new Set<string>();
-    skills.forEach((s) => s.tags.forEach((t) => set.add(t)));
-    return Array.from(set).sort();
-  }, [skills]);
 
   const filtered = useMemo(() => {
     let list = skills;
