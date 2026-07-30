@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { Download, Image as ImageIcon } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -44,10 +45,12 @@ export default function IconsPage() {
         <article className="rounded-xl border border-border bg-card p-6">
           <p className="mb-4 text-sm font-medium text-foreground">Preview</p>
           <div className="flex min-h-[320px] items-center justify-center rounded-lg border border-border-strong bg-background p-6">
-            <img
+            <Image
               src="/icons/skillarc-icon.png"
               alt="SkillArc icon preview"
-              className="h-48 w-48 rounded-2xl sm:h-56 sm:w-56"
+              width={200}
+              height={222}
+              className="size-48 rounded-2xl object-contain sm:size-56"
             />
           </div>
         </article>

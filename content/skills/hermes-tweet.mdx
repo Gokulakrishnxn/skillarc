@@ -1,0 +1,74 @@
+---
+title: "Hermes Tweet"
+description: "Use catalog-guided X/Twitter research and approval-gated actions in Hermes Agent through Xquik."
+type: "tool"
+llms: ["GPT-4o", "Claude 3.5", "Gemini 1.5"]
+tags: ["hermes-agent", "xquik", "x", "twitter", "social-media", "automation"]
+author: "Xquik"
+copies: 0
+stars: 0
+published: true
+---
+
+## Overview
+
+Hermes Tweet adds native Xquik tools to Hermes Agent. Use it for social
+listening, account research, trend analysis, or reviewed account actions.
+
+The plugin separates catalog discovery, reads, and actions:
+
+- `tweet_explore` searches the bundled endpoint catalog. It makes no API call
+  and works without an API key.
+- `tweet_read` calls catalog-listed read endpoints after `XQUIK_API_KEY` is
+  configured.
+- `tweet_action` handles private reads and mutations. It stays disabled unless
+  `HERMES_TWEET_ENABLE_ACTIONS=true`.
+
+## Install
+
+```bash:install.sh
+hermes plugins install Xquik-dev/hermes-tweet --enable
+hermes plugins list
+```
+
+Create an API key in Xquik. Add it to the Hermes runtime environment:
+
+```bash:configure.sh
+export XQUIK_API_KEY="xq_YOUR_KEY"
+export HERMES_TWEET_ENABLE_ACTIONS="false"
+```
+
+Restart Hermes after changing environment variables.
+
+## Read-Only Workflow
+
+Start with catalog discovery. Invoke only a path returned by the catalog:
+
+```text:prompt.txt
+Use tweet_explore to find read-only trend and account endpoints. Call
+tweet_read only for the selected catalog paths. Do not call tweet_action.
+```
+
+Without an API key, Hermes should expose only `tweet_explore`.
+
+## Approval-Gated Actions
+
+Keep actions disabled for research. Enable them only after the user approves
+private reads or account-changing operations:
+
+```bash:actions.sh
+export HERMES_TWEET_ENABLE_ACTIONS="true"
+```
+
+Never place secrets in prompts or tool arguments. Secrets include API keys,
+cookies, account credentials, and private tokens.
+
+## Source
+
+- Repository: [Xquik-dev/hermes-tweet](https://github.com/Xquik-dev/hermes-tweet)
+- Release: [Hermes Tweet 0.1.11](https://github.com/Xquik-dev/hermes-tweet/releases/tag/v0.1.11)
+- Package: [hermes-tweet on PyPI](https://pypi.org/project/hermes-tweet/)
+- License: MIT
+
+Xquik is an independent third-party service. Not affiliated with X Corp.
+"Twitter" and "X" are trademarks of X Corp.

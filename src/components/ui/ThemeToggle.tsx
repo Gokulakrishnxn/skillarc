@@ -1,40 +1,65 @@
 "use client";
 
 import { Moon, Sun } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 import { cn } from "@/lib/utils";
 
 type Theme = "light" | "dark";
 
-function applyTheme(theme: Theme) {
+const THEME_EVENT = "skillarc-theme-change";
+
+function getTheme(): Theme {
+  const saved = window.localStorage.getItem("theme");
+  if (saved === "light" || saved === "dark") return saved;
+  return window.matchMedia("(prefers-color-scheme: dark)").matches
+    ? "dark"
+    : "light";
+}
+
+function getServerTheme(): Theme {
+  return "dark";
+}
+
+function subscribeToTheme(onChange: () => void): () => void {
+  const media = window.matchMedia("(prefers-color-scheme: dark)");
+  const handleStorage = (event: StorageEvent): void => {
+    if (event.key === "theme" || event.key === null) onChange();
+  };
+
+  window.addEventListener("storage", handleStorage);
+  window.addEventListener(THEME_EVENT, onChange);
+  media.addEventListener("change", onChange);
+
+  return (): void => {
+    window.removeEventListener("storage", handleStorage);
+    window.removeEventListener(THEME_EVENT, onChange);
+    media.removeEventListener("change", onChange);
+  };
+}
+
+function applyTheme(theme: Theme): void {
   const root = document.documentElement;
   root.classList.toggle("dark", theme === "dark");
   root.style.colorScheme = theme;
 }
 
 export function ThemeToggle() {
-  const [theme, setTheme] = useState<Theme>("dark");
+  const theme = useSyncExternalStore(
+    subscribeToTheme,
+    getTheme,
+    getServerTheme,
+  );
   const isDark = theme === "dark";
 
   useEffect(() => {
-    const saved = window.localStorage.getItem("theme");
-    if (saved === "light" || saved === "dark") {
-      setTheme(saved);
-      applyTheme(saved);
-      return;
-    }
+    applyTheme(theme);
+  }, [theme]);
 
-    const preferredDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    const initial: Theme = preferredDark ? "dark" : "light";
-    setTheme(initial);
-    applyTheme(initial);
-  }, []);
-
-  const toggleTheme = () => {
+  const toggleTheme = (): void => {
     const next: Theme = isDark ? "light" : "dark";
-    setTheme(next);
     applyTheme(next);
     window.localStorage.setItem("theme", next);
+    window.dispatchEvent(new Event(THEME_EVENT));
   };
 
   return (
@@ -46,19 +71,19 @@ export function ThemeToggle() {
     >
       <span
         className={cn(
-          "inline-flex h-6 w-6 items-center justify-center rounded-full transition",
+          "inline-flex size-6 items-center justify-center rounded-full transition",
           !isDark ? "bg-muted text-foreground" : "text-muted-foreground",
         )}
       >
-        <Sun className="h-3.5 w-3.5" aria-hidden />
+        <Sun className="size-3.5" aria-hidden />
       </span>
       <span
         className={cn(
-          "inline-flex h-6 w-6 items-center justify-center rounded-full transition",
+          "inline-flex size-6 items-center justify-center rounded-full transition",
           isDark ? "bg-muted text-foreground" : "text-muted-foreground",
         )}
       >
-        <Moon className="h-3.5 w-3.5" aria-hidden />
+        <Moon className="size-3.5" aria-hidden />
       </span>
     </button>
   );
